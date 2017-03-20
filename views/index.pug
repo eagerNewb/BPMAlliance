@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  div  
+    p Welcome to BPM
+   
+  div
+  if (!user)
+  a(href="/login") Login
+  br
+  a(href="/register") Register
+
+  if (user)
+  p You are currently logged in as #{user.username}
+  a(href="/logout") Logout
+  div
+  h2 huizel
+  span & 
+  button(onclick="playSound();" class="playSound" ) Play Sound
+  h3 gretel
