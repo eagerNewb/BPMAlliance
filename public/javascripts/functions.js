@@ -1,68 +1,76 @@
-var soundID = "nosecurity";
-createjs.Sound.alternateExtensions = ["mp3"];
-// createjs.Sound.on("fileload", this.loadHandler, this);
-createjs.Sound.registerSound("assets/nosecurity.mp3", soundID);
-var instance = createjs.Sound.play(soundID);  //this is the instance object
-var playPauseBtn = document.getElementById('play-btn');
-//pause and play song
-playPauseBtn.addEventListener('click', playPause);
-// volumeControl.addEventListener('change', volumeUpDown(volumeControlVal));
-function playPause(){
-	// console.log("btn has been clicked", event)
-     if(instance.playState == createjs.Sound.PLAY_SUCCEEDED){
-     	 instance.stop()
-     }else{
-     	 instance.play(soundID)
-     }
+ window.onload = function() {
+if (navigator.mediaDevices) {
+  console.log('getUserMedia supported.');
+
+  var constraints = { audio: true };
+  var chunks = [];
+  navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+
+    var mediaRecorder = new MediaRecorder(stream);
+    // visualize(stream);
+    var record = document.getElementById('play-btn');
+    var stop = document.getElementById('stop-btn');
+    record.onclick = function() {
+      mediaRecorder.start(3000);
+      console.log(mediaRecorder.state);
+      console.log("recorder started");
+      record.style.background = "red";
+      record.style.color = "black";
+    }
+
+    stop.onclick = function() {
+      mediaRecorder.stop();
+      console.log(mediaRecorder.state);
+      console.log("recorder stopped");
+      record.style.background = "";
+      record.style.color = "";
+    }
+
+    mediaRecorder.onstop = function(e) {
+      console.log("data available after MediaRecorder.stop() called.");
+
+      var clipName = prompt('Enter a name for your sound clip');
+
+      var clipContainer = document.createElement('article');
+      var clipLabel = document.createElement('p');
+      var audio = document.createElement('audio');
+      var deleteButton = document.createElement('button');
+
+      var chichi = document.getElementById('recorder')
+      chichi.appendChild(clipContainer);
+      console.log(clipContainer);
+      clipContainer.className = "article-height"
+      clipContainer.classList.add('clip');
+      audio.setAttribute('controls', '');
+      deleteButton.innerHTML = "Delete";
+      clipLabel.innerHTML = clipName;
+
+      clipContainer.appendChild(audio);
+      clipContainer.appendChild(clipLabel);
+      clipContainer.appendChild(deleteButton);
+      // soundClips.appendChild(clipContainer);
+
+      audio.controls = true;
+      var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      chunks = [];
+      var audioURL = URL.createObjectURL(blob);
+      audio.src = audioURL;
+      console.log("recorder stopped");
+
+      // deleteButton.onclick = function(e) {
+      //   evtTgt = e.target;
+      //   evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+      // }
+    }
+
+    mediaRecorder.ondataavailable = function(e) {
+      chunks.push(e.data);
+    }
+  })
+  .catch(function(err) {
+    console.log('The following error occured: ' + err);
+  })
 }
 
-function volumeUpDown(volume){
-  var instanceVolume = volume * 1/100;
-	instance.volume = instanceVolume;	
-	console.log(instanceVolume)	 
 
 }
-var audio = document.getElementById('my-audio');
-var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var ctx = document.getElementById('canvas-ctx');
-var canvasCtx = ctx.getContext('2d');
-
-navigator.mediaDevices.getUserMedia({ audio: true, video:false}).then(function(stream) {
-   var source = audioCtx.createMediaStreamSource(stream);
-   var analyser = audioCtx.createAnalyser();
-   source.connect(analyser);
-
-  analyser.fftSize = 256;
-
-  var bufferLength = analyser.frequencyBinCount;
-  var dataArray = new Uint8Array(bufferLength);
-
-  analyser.getByteTimeDomainData(dataArray);
-  canvasCtx.clearRect(0,0, canvasCtx.width, canvasCtx.height);
-  function draw() {
-
-      drawVisual = requestAnimationFrame(draw);
-
-      analyser.getByteFrequencyData(dataArray);
-
-      canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-      canvasCtx.fillRect(0, 0, ctx.width, ctx.height);
-
-
-      var barWidth = (ctx.width / bufferLength) * 2.5;
-      var barHeight;
-      var x = 0;
-      for(var i = 0; i < bufferLength; i++) {
-        barHeight = dataArray[i]/2;
-        canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
-        canvasCtx.fillRect(x,ctx.height-barHeight/2,barWidth,barHeight);
-        x += barWidth + 1;
-      }
-  };
-  draw();
-  /* use the stream */
-}).catch(function(err) {
-  /* handle the error */
-});
-
-// var source = audioCtx.createMediaElementSource(audio);

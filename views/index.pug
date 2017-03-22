@@ -5,7 +5,7 @@ block content
     p Welcome to BPM
    
   div(class="row")
-   div(class="col-lg-12")
+   div(class="col-lg-12" id="recorder")
    if (!user)
     a(href="/login") Login
     br
@@ -16,9 +16,10 @@ block content
     h2 huizel
     span & 
     button(class="playSound" id="play-btn") Play Sound
+    button(class="playSound" id="stop-btn") Stop Sound
+
     div(class="col-lg-2 col-md-2")
      input(type="range" onchange="volumeUpDown(this.value)" value="0" id="volume-control" defaultValue="50" min="0" max="100" style="width:30%;")
     h3 gretel
    div
-    <audio id="my-audio" src="assets/nosecurity.mp3"></audio>   
     canvas(id="canvas-ctx" width="500" height="500") 
