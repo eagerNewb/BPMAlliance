@@ -1,6 +1,8 @@
 var express = require('express');
 var passport = require('passport');
 var Account = require('../models/account');
+var fs = require('fs');
+// var encoder = require('../modules/encoder');
 var router = express.Router();
 
 /* GET home page. */
@@ -22,6 +24,18 @@ router.post('/register', function(req, res) {
             res.redirect('/');
         });
     });
+});
+
+router.post('/', function(req, res) {
+    console.log(req.body);
+    //BREAKS ON ENCODING
+    // encoder.encode(req.body);
+    // var base64Data = data.replace(/^data:audio\/ogg;base64,/, "");
+    
+    // fs.writeFile("../out.txt", base64Data, 'base64', function(err) {
+    //     if(err) throw err;
+    //     console.log(err);
+    // });
 });
 
 router.get('/login', function(req, res) {
