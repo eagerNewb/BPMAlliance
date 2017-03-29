@@ -53,18 +53,22 @@ window.onload = function() {
         clipContainer.appendChild(deleteButton);
         audio.controls = true;
 
-                                    // type: 'application/octet-binary'}
-        var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+        var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=pcm'});
         chunks = [];//first possible window reinit chunks
         var audioURL = URL.createObjectURL(blob);
-
         audio.src = audioURL;
         console.log("recorder stopped");
-        postAudioBlob(blob); 
-        // deleteButton.onclick = function(e) {
-        //   evtTgt = e.target;
-        //   evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
-        // }
+
+
+        blobToBase64(blob, function(data) {
+           console.log("insideCBconverttobuf___",data);
+           postAudioBlob(data);
+        });
+
+        deleteButton.onclick = function(e) {
+          evtTgt = e.target;
+          evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+        }
       }
 
       mediaRecorder.ondataavailable = function(e) {
@@ -76,8 +80,7 @@ window.onload = function() {
 
         //add loading while streaming        
       }
-    })
-    .catch(function(err) {
+    }).catch(function(err) {
       console.log('The following error occured: ' + err);
     })
 
@@ -87,6 +90,16 @@ window.onload = function() {
           xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
           xhr.send(obj);
     }
+
+    var blobToBase64 = function(blob, cb) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        var dataUrl = reader.result;
+        var base64 = dataUrl.split(',')[1];
+        cb(base64);
+      };
+      reader.readAsDataURL(blob);
+    };
 
  }//if mediaDevices
 

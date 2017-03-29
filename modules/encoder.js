@@ -1,12 +1,13 @@
-// var fs = require('fs');
-// var exports = module.exports = {};
+var fs = require('fs');
+var exports = module.exports = {};
 
-// exports.encode = function (data, callback) {
-//     var base64Data = data.replace(/^data:audio\/ogg;base64,/, "");
-    
-//     fs.writeFile("../out.txt", base64Data, 'base64', function(err) {
-//         if(err) throw err;
-//         console.log(err);
-//         callback(data);
-//     });
-// }
+exports.saveRecording = function(req, res) {
+  var buf = new Buffer(req.body, 'base64'); // decode
+  fs.writeFile("../test.wav", buf, function(err) {
+    if(err) {
+      console.log("err", err);
+    } else {
+      return res.json({'status': 'success'});
+    }
+  }) 
+}
