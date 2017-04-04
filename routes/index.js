@@ -26,6 +26,7 @@ router.post('/register', function(req, res) {
 });
 
 router.post('/', function(req, res) {
+    // console.log("index.Routes.js___",req.body,"___index.Routes.js")
     encoder.saveRecording(req, res);
 });
 

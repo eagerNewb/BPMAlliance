@@ -62,7 +62,7 @@ window.onload = function() {
 
         blobToBase64(blob, function(data) {
            console.log("insideCBconverttobuf___",data);
-           postAudioBlob(data);
+           postAudioBlob(JSON.stringify(data));
         });
 
         deleteButton.onclick = function(e) {
@@ -97,9 +97,16 @@ window.onload = function() {
         var dataUrl = reader.result;
         var base64 = dataUrl.split(',')[1];
         cb(base64);
-      };
+      }
       reader.readAsDataURL(blob);
-    };
+    }
+
+    var arrBufferToBlob = function(arrbuff, callback){
+       var dataView = new DataView(arrbuff);
+       var blob = new Blob([dataView], { type: mimeString });
+       callback(blob);
+    }
+
 
  }//if mediaDevices
 
